@@ -1,32 +1,29 @@
-name: Test
-on: [push]
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
 jobs:
 
-  test:
-    name: Go
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go_version: ['1.18', '1.19', '1.20', '1.21', '1.22', '1.23', '1.24']
-
     steps:
-    - name: "Set up Go ${{ matrix.go_version }}"
-      uses: actions/setup-go@v1
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
       with:
-        go-version: ${{ matrix.go_version }}
-      id: go
+        go-version: '1.20'
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v1
+    - name: Build
+      run: go build -v ./...
 
-    - name: Run tests
-      run: go test -v -race
-
-    - name: Notify
-      uses: dirty-go/notify-telegram@v0.1.0
-      if: always()
-      with:
-        chat: ${{ secrets.TELEGRAM_CHAT }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        status: ${{ job.status }}
+    - name: Test
+      run: go test -v ./...
 
