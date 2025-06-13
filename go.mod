@@ -1,3 +1,3 @@
-module github.com/iamucil/tbot
+module github.com/dirty-go/tbot
 
 go 1.20
