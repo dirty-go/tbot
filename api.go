@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -13,17 +12,12 @@ import (
 	"time"
 )
 
-type responseParameters struct {
-	MigrateToChatID int `json:"migrate_to_chat_id"`
-	RetryAfter      int `json:"retry_after"`
-}
-
 type apiResponse struct {
 	OK          bool                `json:"ok"`
 	Result      json.RawMessage     `json:"result"`
 	Description string              `json:"description"`
 	ErrorCode   int                 `json:"error_code"`
-	Parameter   *responseParameters `json:"parameter,omitempty"`
+	Parameter   *ResponseParameters `json:"parameter,omitempty"`
 }
 
 var netTransport = &http.Transport{
@@ -82,7 +76,7 @@ func (c *Client) sendRequest(method string, request url.Values, response any) er
 
 		return json.Unmarshal(apiResp.Result, response)
 	}
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}

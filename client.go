@@ -49,18 +49,6 @@ func structString(s any) string {
 	return string(str)
 }
 
-type User struct {
-	ID                      int    `json:"id"`
-	IsBot                   bool   `json:"is_bot"`
-	FirstName               string `json:"first_name"`
-	LastName                string `json:"last_name"`
-	Username                string `json:"username"`
-	LanguageCode            string `json:"language_code"`
-	CanJoinGroups           bool   `json:"can_join_groups"`
-	CanReadAllGroupMessages bool   `json:"can_read_all_group_messages"`
-	SupportsInlineQueries   bool   `json:"supports_inline_queries"`
-}
-
 // Me returns info about bot as a User object
 func (c *Client) Me() (*User, error) {
 	var me User
@@ -68,55 +56,12 @@ func (c *Client) Me() (*User, error) {
 	return &me, err
 }
 
-// ChatPhoto represents a chat photo
-type ChatPhoto struct {
-	SmallFileID       string `json:"small_file_id"`
-	SmallFileUniqueID string `json:"small_file_unique_id"`
-	BigFileID         string `json:"big_file_id"`
-	BigFileUniqueID   string `json:"big_file_unique_id"`
-}
-
-// ChatPermissions describes actions that a non-administrator user is allowed to take in a chat.
-type ChatPermissions struct {
-	// CanSendMessages True, if the user is allowed to send text messages, contacts, locations and venues
-	CanSendMessages bool `json:"can_send_messages,omitempty"`
-	// CanSendMediaMessages True, if the user is allowed to send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages
-	CanSendMediaMessages bool `json:"can_send_media_messages,omitempty"`
-	// CanSendPolls True, if the user is allowed to send polls, implies can_send_messages
-	CanSendPolls bool `json:"can_send_polls,omitempty"`
-	// CanSendOtherMessages True, if the user is allowed to send animations, games, stickers and use inline bots, implies can_send_media_messages
-	CanSendOtherMessages bool `json:"can_send_other_messages,omitempty"`
-	// CanAddWebPagePreviews True, if the user is allowed to add web page previews to their messages, implies can_send_media_messages
-	CanAddWebPagePreviews bool `json:"can_add_web_page_previews,omitempty"`
-	// CanChaneInfo True, if the user is allowed to change the chat title, photo and other settings. Ignored in public supergroups
-	CanChangeInfo bool `json:"can_change_info,omitempty"`
-	// CanInviteUsers  True, if the user is allowed to invite new users to the chat
-	CanInviteUsers bool `json:"can_invite_users,omitempty"`
-	// CanPinMessages True, if the user is allowed to pin messages. Ignored in public supergroups
-	CanPinMessages bool `json:"can_pin_messages,omitempty"`
-}
-
-type replyKeyboardRemove struct {
-	RemoveKeyboard bool `json:"remove_keyboard"`
-	Selective      bool `json:"selective"`
-}
-
-type LoginURL struct {
-	URL                string  `json:"url"`
-	ForwardText        *string `json:"forward_text,omitempty"`
-	BotUsername        string  `json:"bot_username,omitempty"`
-	RequestWriteAccess string  `json:"request_write_access,omitempty"`
-}
-
-type forceReply struct {
-	ForceReply bool `json:"force_reply"`
-	Selective  bool `json:"selective"`
-}
-
 var (
 	OptDisableWebPagePreview = func(r url.Values) { r.Set("disable_web_page_preview", "true") }
-	OptReplyKeyboardRemove   = func(r url.Values) { r.Set("reply_markup", structString(&replyKeyboardRemove{RemoveKeyboard: true})) }
-	OptInlineKeyboardMarkup  = func(markup *InlineKeyboardMarkup) sendOption {
+	OptReplyKeyboardRemove   = func(r url.Values) {
+		r.Set("reply_markup", structString(&ReplyKeyboardRemove{RemoveKeyboard: true}))
+	}
+	OptInlineKeyboardMarkup = func(markup *InlineKeyboardMarkup) sendOption {
 		return func(r url.Values) {
 			r.Set("reply_markup", structString(markup))
 		}
@@ -127,13 +72,13 @@ var (
 		}
 	}
 	OptReplyKeyboardRemoveSelective = func(r url.Values) {
-		r.Set("reply_markup", structString(&replyKeyboardRemove{RemoveKeyboard: true, Selective: true}))
+		r.Set("reply_markup", structString(&ReplyKeyboardRemove{RemoveKeyboard: true, Selective: true}))
 	}
 	OptForceReply = func(r url.Values) {
-		r.Set("reply_markup", structString(&forceReply{ForceReply: true}))
+		r.Set("reply_markup", structString(&ForceReply{ForceReply: true}))
 	}
 	OptForceReplySelective = func(r url.Values) {
-		r.Set("reply_markup", structString(&forceReply{ForceReply: true, Selective: true}))
+		r.Set("reply_markup", structString(&ForceReply{ForceReply: true, Selective: true}))
 	}
 )
 
