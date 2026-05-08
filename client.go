@@ -3,9 +3,18 @@ package tbot
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
+)
+
+const (
+	defaultRPS         = 30.0
+	defaultBurst       = 30
+	defaultMaxRetries  = 3
+	defaultHTTPTimeout = 120 * time.Second
 )
 
 type Client struct {
@@ -17,6 +26,11 @@ type Client struct {
 	bufferSize   int
 	nextOffset   int
 	logger       Logger
+
+	httpClient  *http.Client
+	rateLimiter *rateLimiter
+	maxRetries  int
+	sleepFn     func(time.Duration)
 }
 
 type sendOption func(url.Values)
@@ -33,15 +47,39 @@ var (
 	OptSendingWithoutReply = func(r url.Values) { r.Set("allow_sending_without_reply", "true") }
 )
 
-func NewClient(token string, baseURL string) *Client {
+func NewClient(token string, baseURL string, opts ...ClientOptions) *Client {
 	if baseURL == "" {
 		baseURL = apiBaseURL
 	}
-	return &Client{
-		token:   token,
-		baseURL: baseURL,
-		url:     fmt.Sprintf("%s/bot%s", baseURL, token) + "%s",
+	c := &Client{
+		token:       token,
+		baseURL:     baseURL,
+		url:         fmt.Sprintf("%s/bot%s", baseURL, token) + "%s",
+		logger:      nopLogger{},
+		maxRetries:  defaultMaxRetries,
+		rateLimiter: newRateLimiter(defaultRPS, defaultBurst),
+		httpClient: &http.Client{
+			Timeout:   defaultHTTPTimeout,
+			Transport: netTransport,
+		},
+		sleepFn: time.Sleep,
 	}
+	for _, opt := range opts {
+		opt(c)
+	}
+	if c.logger == nil {
+		c.logger = nopLogger{}
+	}
+	if c.httpClient == nil {
+		c.httpClient = &http.Client{
+			Timeout:   defaultHTTPTimeout,
+			Transport: netTransport,
+		}
+	}
+	if c.sleepFn == nil {
+		c.sleepFn = time.Sleep
+	}
+	return c
 }
 
 func structString(s any) string {
