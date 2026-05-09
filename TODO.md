@@ -13,15 +13,15 @@ ergonomics, correctness margin, and housekeeping.
 package — they fall back to using `sendRequest` directly. Group by domain:
 
 ### Updates / webhooks
-- [ ] `GetUpdates` (long polling — `Client` already has `nextOffset`,
+- [x] `GetUpdates` (long polling — `Client` already has `nextOffset`,
       `bufferSize`, `timeout`, `updateParams` fields prepared for it but no
       method)
-- [ ] `SetWebhook`, `DeleteWebhook`, `GetWebhookInfo`
+- [x] `SetWebhook`, `DeleteWebhook`, `GetWebhookInfo`
 
 ### Messaging — send
 - [ ] `SendPhoto`, `SendAudio`, `SendDocument`, `SendVideo`, `SendAnimation`,
       `SendVoice`, `SendVideoNote`, `SendPaidMedia`, `SendMediaGroup`
-- [ ] `SendLocation`, `SendVenue`, `SendContact`, `SendPoll`, `SendDice`
+- [x] `SendLocation`, `SendVenue`, `SendContact`, `SendPoll`, `SendDice`
 - [ ] `SendChecklist`, `SendGame`
 - [ ] `CopyMessage`, `CopyMessages`, `ForwardMessages`
 
@@ -65,7 +65,7 @@ package — they fall back to using `sendRequest` directly. Group by domain:
 
 ### Inline mode
 - [ ] `AnswerInlineQuery`, `AnswerWebAppQuery`, `SavePreparedInlineMessage`
-- [ ] `AnswerCallbackQuery`
+- [x] `AnswerCallbackQuery`
 
 ### Stickers
 - [ ] `UploadStickerFile`, `CreateNewStickerSet`, `AddStickerToSet`,
@@ -101,7 +101,7 @@ write the most common bot.
 
 ## Ergonomics
 
-- [ ] **Typed errors.** `sendRequest` returns
+- [x] **Typed errors.** `sendRequest` returns
       `fmt.Errorf("%d : %s", code, desc)` — callers can't programmatically
       detect flood-control (`retry_after`) or migration
       (`migrate_to_chat_id`). Introduce
@@ -150,7 +150,7 @@ write the most common bot.
 
 ## Correctness margin
 
-- [ ] **Race in `sendRequestWithFiles`.** `req` and `resp` are written
+- [x] **Race in `sendRequestWithFiles`.** `req` and `resp` are written
       inside a goroutine and read after the `<-done` join, which is
       synchronized — but `err` is also captured in the closure, written
       both inside the goroutine and at file-open time on the main path,
@@ -159,24 +159,24 @@ write the most common bot.
       owns the pipe writer and returns its error via a channel; the main
       goroutine performs the HTTP request synchronously after the writer
       goroutine closes its end.
-- [ ] **Logger interface is exposed but barely wired.** `c.logger` is
+- [x] **Logger interface is exposed but barely wired.** `c.logger` is
       consulted in exactly one error path
       (`sendRequestWithFiles` → `Error(err)`) and is left zero-valued —
       so a caller who never calls a `WithLogger` option will hit a nil
       dereference if that path fires. Default the logger to `nopLogger{}`
       in `NewClient`, and either log other request lifecycle events or
       remove the unused interface methods from `Logger`.
-- [ ] **`fmt.Errorf(apiResp.Description)`** in
+- [x] **`fmt.Errorf(apiResp.Description)`** in
       `sendRequestWithFiles`'s success path treats user-supplied data as a
       format string. Use `errors.New(apiResp.Description)` or
       `fmt.Errorf("%s", apiResp.Description)`.
-- [ ] **Deprecated `Thumb` JSON tag.** The legacy `Thumb` fields kept on
+- [x] **Deprecated `Thumb` JSON tag.** The legacy `Thumb` fields kept on
       media types still carry `json:"thumb,omitempty"`. The fields are
       receive-only in practice, so this is harmless today, but a caller
       who manually populates `Thumb` would emit both `thumb` and
       `thumbnail` on the wire. When/if these are removed, replace the
       tag with `json:"-"` first as a safer interim.
-- [ ] **Custom `UnmarshalJSON` for unions** (optional). The flat-struct
+- [x] **Custom `UnmarshalJSON` for unions** (optional). The flat-struct
       approach reads fine for unmarshalling, but writers who construct a
       union manually can leave variant fields populated for the wrong
       `Type`. Adding a `MarshalJSON` that whitelists fields per variant

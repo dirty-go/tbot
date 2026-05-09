@@ -1,5 +1,7 @@
 package tbot
 
+import "encoding/json"
+
 // ChatBoostSource describes the origin of a chat boost. Variant is given by
 // Source:
 //   - "premium"   — User is set: a Premium subscriber boosted directly.
@@ -11,6 +13,28 @@ type ChatBoostSource struct {
 	GiveawayMessageID  int    `json:"giveaway_message_id,omitempty"`
 	PrizeStarCount     int    `json:"prize_star_count,omitempty"`
 	IsUnclaimed        bool   `json:"is_unclaimed,omitempty"`
+}
+
+// MarshalJSON emits only fields valid for the selected boost source variant.
+func (s ChatBoostSource) MarshalJSON() ([]byte, error) {
+	type payload struct {
+		Source            string `json:"source"`
+		User              *User  `json:"user,omitempty"`
+		GiveawayMessageID int    `json:"giveaway_message_id,omitempty"`
+		PrizeStarCount    int    `json:"prize_star_count,omitempty"`
+		IsUnclaimed       bool   `json:"is_unclaimed,omitempty"`
+	}
+	out := payload{Source: s.Source}
+	switch s.Source {
+	case ChatBoostSourcePremium, ChatBoostSourceGiftCode:
+		out.User = s.User
+	case ChatBoostSourceGiveaway:
+		out.GiveawayMessageID = s.GiveawayMessageID
+		out.User = s.User
+		out.PrizeStarCount = s.PrizeStarCount
+		out.IsUnclaimed = s.IsUnclaimed
+	}
+	return json.Marshal(out)
 }
 
 // ChatBoostSource Source values.
@@ -68,6 +92,30 @@ type BackgroundFill struct {
 	Colors         []int  `json:"colors,omitempty"`
 }
 
+// MarshalJSON emits only fields valid for the selected fill variant.
+func (b BackgroundFill) MarshalJSON() ([]byte, error) {
+	type payload struct {
+		Type          string `json:"type"`
+		Color         int    `json:"color,omitempty"`
+		TopColor      int    `json:"top_color,omitempty"`
+		BottomColor   int    `json:"bottom_color,omitempty"`
+		RotationAngle int    `json:"rotation_angle,omitempty"`
+		Colors        []int  `json:"colors,omitempty"`
+	}
+	out := payload{Type: b.Type}
+	switch b.Type {
+	case BackgroundFillSolid:
+		out.Color = b.Color
+	case BackgroundFillGradient:
+		out.TopColor = b.TopColor
+		out.BottomColor = b.BottomColor
+		out.RotationAngle = b.RotationAngle
+	case BackgroundFillFreeformGradient:
+		out.Colors = b.Colors
+	}
+	return json.Marshal(out)
+}
+
 // BackgroundFill Type values.
 const (
 	BackgroundFillSolid            = "solid"
@@ -90,6 +138,41 @@ type BackgroundType struct {
 	Intensity        int             `json:"intensity,omitempty"`
 	IsInverted       bool            `json:"is_inverted,omitempty"`
 	ThemeName        string          `json:"theme_name,omitempty"`
+}
+
+// MarshalJSON emits only fields valid for the selected background variant.
+func (b BackgroundType) MarshalJSON() ([]byte, error) {
+	type payload struct {
+		Type             string          `json:"type"`
+		Fill             *BackgroundFill `json:"fill,omitempty"`
+		DarkThemeDimming int             `json:"dark_theme_dimming,omitempty"`
+		Document         *Document       `json:"document,omitempty"`
+		IsBlurred        bool            `json:"is_blurred,omitempty"`
+		IsMoving         bool            `json:"is_moving,omitempty"`
+		Intensity        int             `json:"intensity,omitempty"`
+		IsInverted       bool            `json:"is_inverted,omitempty"`
+		ThemeName        string          `json:"theme_name,omitempty"`
+	}
+	out := payload{Type: b.Type}
+	switch b.Type {
+	case BackgroundTypeFill:
+		out.Fill = b.Fill
+		out.DarkThemeDimming = b.DarkThemeDimming
+	case BackgroundTypeWallpaper:
+		out.Document = b.Document
+		out.DarkThemeDimming = b.DarkThemeDimming
+		out.IsBlurred = b.IsBlurred
+		out.IsMoving = b.IsMoving
+	case BackgroundTypePattern:
+		out.Document = b.Document
+		out.Fill = b.Fill
+		out.Intensity = b.Intensity
+		out.IsInverted = b.IsInverted
+		out.IsMoving = b.IsMoving
+	case BackgroundTypeChatTheme:
+		out.ThemeName = b.ThemeName
+	}
+	return json.Marshal(out)
 }
 
 // BackgroundType Type values.

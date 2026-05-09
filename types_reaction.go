@@ -1,5 +1,7 @@
 package tbot
 
+import "encoding/json"
+
 // ReactionType describes a reaction. The variant is given by Type:
 //   - "emoji"        — Emoji is set
 //   - "custom_emoji" — CustomEmojiID is set
@@ -8,6 +10,23 @@ type ReactionType struct {
 	Type          string `json:"type"`
 	Emoji         string `json:"emoji,omitempty"`
 	CustomEmojiID string `json:"custom_emoji_id,omitempty"`
+}
+
+// MarshalJSON emits only fields valid for the current reaction variant.
+func (r ReactionType) MarshalJSON() ([]byte, error) {
+	type payload struct {
+		Type          string `json:"type"`
+		Emoji         string `json:"emoji,omitempty"`
+		CustomEmojiID string `json:"custom_emoji_id,omitempty"`
+	}
+	out := payload{Type: r.Type}
+	switch r.Type {
+	case ReactionTypeEmoji:
+		out.Emoji = r.Emoji
+	case ReactionTypeCustomEmoji:
+		out.CustomEmojiID = r.CustomEmojiID
+	}
+	return json.Marshal(out)
 }
 
 // ReactionType Type values.

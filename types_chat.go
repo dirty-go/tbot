@@ -1,5 +1,7 @@
 package tbot
 
+import "encoding/json"
+
 // Chat represents a chat. This is the small Chat object used in updates and
 // embedded in many other types. Use ChatFullInfo (returned by getChat) when
 // you need the bio, permissions, pinned message, etc.
@@ -195,6 +197,95 @@ type ChatMember struct {
 	CanAddWebPagePreviews bool  `json:"can_add_web_page_previews,omitempty"`
 	CanEditTag            bool  `json:"can_edit_tag,omitempty"`
 	UntilDate             int64 `json:"until_date,omitempty"`
+}
+
+// MarshalJSON emits only fields valid for the selected chat-member status.
+func (m ChatMember) MarshalJSON() ([]byte, error) {
+	type payload struct {
+		Status      string `json:"status"`
+		User        User   `json:"user"`
+		IsAnonymous bool   `json:"is_anonymous,omitempty"`
+		CustomTitle string `json:"custom_title,omitempty"`
+		Tag         string `json:"tag,omitempty"`
+
+		CanBeEdited             bool `json:"can_be_edited,omitempty"`
+		CanManageChat           bool `json:"can_manage_chat,omitempty"`
+		CanDeleteMessages       bool `json:"can_delete_messages,omitempty"`
+		CanManageVideoChats     bool `json:"can_manage_video_chats,omitempty"`
+		CanRestrictMembers      bool `json:"can_restrict_members,omitempty"`
+		CanPromoteMembers       bool `json:"can_promote_members,omitempty"`
+		CanChangeInfo           bool `json:"can_change_info,omitempty"`
+		CanInviteUsers          bool `json:"can_invite_users,omitempty"`
+		CanPostStories          bool `json:"can_post_stories,omitempty"`
+		CanEditStories          bool `json:"can_edit_stories,omitempty"`
+		CanDeleteStories        bool `json:"can_delete_stories,omitempty"`
+		CanPostMessages         bool `json:"can_post_messages,omitempty"`
+		CanEditMessages         bool `json:"can_edit_messages,omitempty"`
+		CanPinMessages          bool `json:"can_pin_messages,omitempty"`
+		CanManageTopics         bool `json:"can_manage_topics,omitempty"`
+		CanManageDirectMessages bool `json:"can_manage_direct_messages,omitempty"`
+		CanManageTags           bool `json:"can_manage_tags,omitempty"`
+
+		IsMember              bool  `json:"is_member,omitempty"`
+		CanSendMessages       bool  `json:"can_send_messages,omitempty"`
+		CanSendAudios         bool  `json:"can_send_audios,omitempty"`
+		CanSendDocuments      bool  `json:"can_send_documents,omitempty"`
+		CanSendPhotos         bool  `json:"can_send_photos,omitempty"`
+		CanSendVideos         bool  `json:"can_send_videos,omitempty"`
+		CanSendVideoNotes     bool  `json:"can_send_video_notes,omitempty"`
+		CanSendVoiceNotes     bool  `json:"can_send_voice_notes,omitempty"`
+		CanSendPolls          bool  `json:"can_send_polls,omitempty"`
+		CanSendOtherMessages  bool  `json:"can_send_other_messages,omitempty"`
+		CanAddWebPagePreviews bool  `json:"can_add_web_page_previews,omitempty"`
+		CanEditTag            bool  `json:"can_edit_tag,omitempty"`
+		UntilDate             int64 `json:"until_date,omitempty"`
+	}
+	out := payload{
+		Status: m.Status,
+		User:   m.User,
+	}
+	switch m.Status {
+	case ChatMemberStatusCreator:
+		out.IsAnonymous = m.IsAnonymous
+		out.CustomTitle = m.CustomTitle
+		out.Tag = m.Tag
+	case ChatMemberStatusAdministrator:
+		out.IsAnonymous = m.IsAnonymous
+		out.CustomTitle = m.CustomTitle
+		out.Tag = m.Tag
+		out.CanBeEdited = m.CanBeEdited
+		out.CanManageChat = m.CanManageChat
+		out.CanDeleteMessages = m.CanDeleteMessages
+		out.CanManageVideoChats = m.CanManageVideoChats
+		out.CanRestrictMembers = m.CanRestrictMembers
+		out.CanPromoteMembers = m.CanPromoteMembers
+		out.CanChangeInfo = m.CanChangeInfo
+		out.CanInviteUsers = m.CanInviteUsers
+		out.CanPostStories = m.CanPostStories
+		out.CanEditStories = m.CanEditStories
+		out.CanDeleteStories = m.CanDeleteStories
+		out.CanPostMessages = m.CanPostMessages
+		out.CanEditMessages = m.CanEditMessages
+		out.CanPinMessages = m.CanPinMessages
+		out.CanManageTopics = m.CanManageTopics
+		out.CanManageDirectMessages = m.CanManageDirectMessages
+		out.CanManageTags = m.CanManageTags
+	case ChatMemberStatusRestricted:
+		out.IsMember = m.IsMember
+		out.CanSendMessages = m.CanSendMessages
+		out.CanSendAudios = m.CanSendAudios
+		out.CanSendDocuments = m.CanSendDocuments
+		out.CanSendPhotos = m.CanSendPhotos
+		out.CanSendVideos = m.CanSendVideos
+		out.CanSendVideoNotes = m.CanSendVideoNotes
+		out.CanSendVoiceNotes = m.CanSendVoiceNotes
+		out.CanSendPolls = m.CanSendPolls
+		out.CanSendOtherMessages = m.CanSendOtherMessages
+		out.CanAddWebPagePreviews = m.CanAddWebPagePreviews
+		out.CanEditTag = m.CanEditTag
+		out.UntilDate = m.UntilDate
+	}
+	return json.Marshal(out)
 }
 
 // ChatMember status constants.

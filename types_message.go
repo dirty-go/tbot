@@ -1,5 +1,7 @@
 package tbot
 
+import "encoding/json"
+
 // Message represents a message sent in a chat. It is the central type returned
 // by sendMessage, sendPhoto, etc., and embedded in many update payloads.
 //
@@ -222,6 +224,38 @@ type MessageOrigin struct {
 	Chat            *Chat  `json:"chat,omitempty"`
 	MessageID       int    `json:"message_id,omitempty"`
 	AuthorSignature string `json:"author_signature,omitempty"`
+}
+
+// MarshalJSON emits only fields valid for the selected message-origin variant.
+func (m MessageOrigin) MarshalJSON() ([]byte, error) {
+	type payload struct {
+		Type            string `json:"type"`
+		Date            int64  `json:"date"`
+		SenderUser      *User  `json:"sender_user,omitempty"`
+		SenderUserName  string `json:"sender_user_name,omitempty"`
+		SenderChat      *Chat  `json:"sender_chat,omitempty"`
+		Chat            *Chat  `json:"chat,omitempty"`
+		MessageID       int    `json:"message_id,omitempty"`
+		AuthorSignature string `json:"author_signature,omitempty"`
+	}
+	out := payload{
+		Type: m.Type,
+		Date: m.Date,
+	}
+	switch m.Type {
+	case MessageOriginTypeUser:
+		out.SenderUser = m.SenderUser
+	case MessageOriginTypeHiddenUser:
+		out.SenderUserName = m.SenderUserName
+	case MessageOriginTypeChat:
+		out.SenderChat = m.SenderChat
+		out.AuthorSignature = m.AuthorSignature
+	case MessageOriginTypeChannel:
+		out.Chat = m.Chat
+		out.MessageID = m.MessageID
+		out.AuthorSignature = m.AuthorSignature
+	}
+	return json.Marshal(out)
 }
 
 // MessageOrigin Type values.

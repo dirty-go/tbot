@@ -81,7 +81,7 @@ type Animation struct {
 	// Deprecated: legacy field present in earlier versions of this library.
 	// Telegram renamed the JSON tag from "thumb" to "thumbnail" in Bot API 6.6;
 	// this Go field is now never populated. Use Thumbnail instead.
-	Thumb *PhotoSize `json:"thumb,omitempty"`
+	Thumb *PhotoSize `json:"-"`
 }
 
 // Audio represents an audio file to be treated as music by Telegram clients.
@@ -108,7 +108,7 @@ type Document struct {
 	FileSize     int64      `json:"file_size,omitempty"`
 
 	// Deprecated: see Animation.Thumb.
-	Thumb *PhotoSize `json:"thumb,omitempty"`
+	Thumb *PhotoSize `json:"-"`
 }
 
 // Story represents a story posted in a chat.
@@ -135,7 +135,7 @@ type Video struct {
 	// Deprecated: legacy alias for MIMEType.
 	MimeType string `json:"-"`
 	// Deprecated: see Animation.Thumb.
-	Thumb *PhotoSize `json:"thumb,omitempty"`
+	Thumb *PhotoSize `json:"-"`
 }
 
 // VideoQuality describes one of the available qualities of a Video.
@@ -158,7 +158,7 @@ type VideoNote struct {
 	FileSize     int64      `json:"file_size,omitempty"`
 
 	// Deprecated: see Animation.Thumb.
-	Thumb *PhotoSize `json:"thumb,omitempty"`
+	Thumb *PhotoSize `json:"-"`
 }
 
 // Voice represents a voice note.

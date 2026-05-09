@@ -1,5 +1,7 @@
 package tbot
 
+import "encoding/json"
+
 // KeyboardButton represents one button of the reply (custom) keyboard.
 //
 // Optional fields are mutually exclusive: at most one of RequestUsers,
@@ -173,6 +175,21 @@ type MenuButton struct {
 	Type   string      `json:"type"`
 	Text   string      `json:"text,omitempty"`
 	WebApp *WebAppInfo `json:"web_app,omitempty"`
+}
+
+// MarshalJSON emits only fields valid for the selected menu-button variant.
+func (m MenuButton) MarshalJSON() ([]byte, error) {
+	type payload struct {
+		Type   string      `json:"type"`
+		Text   string      `json:"text,omitempty"`
+		WebApp *WebAppInfo `json:"web_app,omitempty"`
+	}
+	out := payload{Type: m.Type}
+	if m.Type == MenuButtonTypeWebApp {
+		out.Text = m.Text
+		out.WebApp = m.WebApp
+	}
+	return json.Marshal(out)
 }
 
 // MenuButton Type values.

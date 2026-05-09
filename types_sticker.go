@@ -19,7 +19,7 @@ type Sticker struct {
 	FileSize         int64         `json:"file_size,omitempty"`
 
 	// Deprecated: see Animation.Thumb. Use Thumbnail.
-	Thumb *PhotoSize `json:"thumb,omitempty"`
+	Thumb *PhotoSize `json:"-"`
 }
 
 // Sticker Type values.
