@@ -269,6 +269,12 @@ type File struct {
 	FilePath     string `json:"file_path,omitempty"`
 }
 
+// UserProfilePhotos contains a user's profile photos.
+type UserProfilePhotos struct {
+	TotalCount int           `json:"total_count"`
+	Photos     [][]PhotoSize `json:"photos"`
+}
+
 // Game represents a HTML5 game registered via @BotFather.
 type Game struct {
 	Title        string          `json:"title"`

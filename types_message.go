@@ -159,6 +159,10 @@ type MaybeInaccessibleMessage struct {
 	Message
 }
 
+// IsInaccessible reports whether the message is an InaccessibleMessage — one
+// the bot can no longer access. Such payloads always carry a zero Date.
+func (m MaybeInaccessibleMessage) IsInaccessible() bool { return m.Date == 0 }
+
 // TextQuote contains information about the quoted part of a message that is
 // replied to by the given message.
 type TextQuote struct {

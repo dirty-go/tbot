@@ -36,6 +36,25 @@ const (
 	ReactionTypePaid        = "paid"
 )
 
+// IsEmoji reports whether the reaction is a standard emoji reaction.
+func (r ReactionType) IsEmoji() bool { return r.Type == ReactionTypeEmoji }
+
+// IsCustomEmoji reports whether the reaction is a custom emoji reaction.
+func (r ReactionType) IsCustomEmoji() bool { return r.Type == ReactionTypeCustomEmoji }
+
+// IsPaid reports whether the reaction is a paid (star) reaction.
+func (r ReactionType) IsPaid() bool { return r.Type == ReactionTypePaid }
+
+// EmojiReaction builds an emoji ReactionType for SetMessageReaction.
+func EmojiReaction(emoji string) ReactionType {
+	return ReactionType{Type: ReactionTypeEmoji, Emoji: emoji}
+}
+
+// CustomEmojiReaction builds a custom-emoji ReactionType for SetMessageReaction.
+func CustomEmojiReaction(customEmojiID string) ReactionType {
+	return ReactionType{Type: ReactionTypeCustomEmoji, CustomEmojiID: customEmojiID}
+}
+
 // ReactionCount is the count of one reaction on a message.
 type ReactionCount struct {
 	Type       ReactionType `json:"type"`

@@ -8,11 +8,22 @@ import "fmt"
 // parameters.retry_after (or the Retry-After header on a 429) when
 // present, so callers can implement higher-level back-pressure on top of
 // the client's built-in retries.
+//
+// Parameters carries the raw response parameters when Telegram supplies them,
+// letting callers react to migrate_to_chat_id (a group upgraded to a
+// supergroup) or retry_after via errors.As:
+//
+//	var apiErr *tbot.APIError
+//	if errors.As(err, &apiErr) && apiErr.Parameters != nil &&
+//		apiErr.Parameters.MigrateToChatID != 0 {
+//		// retry against apiErr.Parameters.MigrateToChatID
+//	}
 type APIError struct {
 	StatusCode  int
 	ErrorCode   int
 	Description string
 	RetryAfter  int
+	Parameters  *ResponseParameters
 }
 
 func (e *APIError) Error() string {

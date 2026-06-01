@@ -1,6 +1,7 @@
 package tbot
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -42,7 +43,7 @@ func TestSendRequest_Success(t *testing.T) {
 
 	c, _ := newTestClient(t, srv)
 	var u User
-	if err := c.sendRequest("/getMe", nil, &u); err != nil {
+	if err := c.sendRequest(context.Background(), "/getMe", nil, &u); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if u.ID != 42 || !u.IsBot || u.FirstName != "bot" {
@@ -65,7 +66,7 @@ func TestSendRequest_RetriesOn429ThenSucceeds(t *testing.T) {
 
 	c, slept := newTestClient(t, srv)
 	var u User
-	if err := c.sendRequest("/getMe", nil, &u); err != nil {
+	if err := c.sendRequest(context.Background(), "/getMe", nil, &u); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if got := hits.Load(); got != 3 {
@@ -92,7 +93,7 @@ func TestSendRequest_HonoursRetryAfterHeader(t *testing.T) {
 
 	c, slept := newTestClient(t, srv)
 	var u User
-	if err := c.sendRequest("/getMe", nil, &u); err != nil {
+	if err := c.sendRequest(context.Background(), "/getMe", nil, &u); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if got := time.Duration(slept.Load()); got < 5*time.Second {
@@ -108,7 +109,7 @@ func TestSendRequest_429Exhausted_ReturnsAPIError(t *testing.T) {
 	defer srv.Close()
 
 	c, _ := newTestClient(t, srv)
-	err := c.sendRequest("/getMe", nil, nil)
+	err := c.sendRequest(context.Background(), "/getMe", nil, nil)
 	if err == nil {
 		t.Fatal("expected error after exhausted retries")
 	}
@@ -135,7 +136,7 @@ func TestSendRequest_200OkFalse429IsRetried(t *testing.T) {
 
 	c, _ := newTestClient(t, srv)
 	var u User
-	if err := c.sendRequest("/getMe", nil, &u); err != nil {
+	if err := c.sendRequest(context.Background(), "/getMe", nil, &u); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if hits.Load() != 2 {
@@ -153,7 +154,7 @@ func TestSendRequest_5xxRetriedThenFailsAsAPIError(t *testing.T) {
 	defer srv.Close()
 
 	c, _ := newTestClient(t, srv)
-	err := c.sendRequest("/getMe", nil, nil)
+	err := c.sendRequest(context.Background(), "/getMe", nil, nil)
 	if err == nil {
 		t.Fatal("expected error after exhausted retries")
 	}
@@ -179,7 +180,7 @@ func TestSendRequest_4xxNotRetried(t *testing.T) {
 	defer srv.Close()
 
 	c, _ := newTestClient(t, srv)
-	err := c.sendRequest("/getMe", nil, nil)
+	err := c.sendRequest(context.Background(), "/getMe", nil, nil)
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -210,7 +211,7 @@ func TestSendRequest_FormBodyEchoed(t *testing.T) {
 	v.Set("chat_id", "42")
 	v.Set("text", "hi")
 	var msg Message
-	if err := c.sendRequest("/sendMessage", v, &msg); err != nil {
+	if err := c.sendRequest(context.Background(), "/sendMessage", v, &msg); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
@@ -239,7 +240,7 @@ func TestRateLimiter_ThrottlesConcurrentRequests(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			var u User
-			_ = c.sendRequest("/getMe", nil, &u)
+			_ = c.sendRequest(context.Background(), "/getMe", nil, &u)
 		}()
 	}
 	wg.Wait()

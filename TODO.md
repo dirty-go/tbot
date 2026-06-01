@@ -19,37 +19,39 @@ package — they fall back to using `sendRequest` directly. Group by domain:
 - [x] `SetWebhook`, `DeleteWebhook`, `GetWebhookInfo`
 
 ### Messaging — send
-- [ ] `SendPhoto`, `SendAudio`, `SendDocument`, `SendVideo`, `SendAnimation`,
-      `SendVoice`, `SendVideoNote`, `SendPaidMedia`, `SendMediaGroup`
+- [x] `SendPhoto`, `SendAudio`, `SendDocument`, `SendVideo`, `SendAnimation`,
+      `SendVoice`, `SendVideoNote`, `SendMediaGroup` (file_id/URL/upload via the
+      new `InputFile`). `SendPaidMedia` still TODO.
 - [x] `SendLocation`, `SendVenue`, `SendContact`, `SendPoll`, `SendDice`
 - [ ] `SendChecklist`, `SendGame`
-- [ ] `CopyMessage`, `CopyMessages`, `ForwardMessages`
+- [x] `CopyMessage`, `CopyMessages`, `ForwardMessages`
 
 ### Messaging — edit/delete/react
-- [ ] `EditMessageText`, `EditMessageCaption`, `EditMessageMedia`,
+- [x] `EditMessageText`, `EditMessageCaption`, `EditMessageMedia`,
       `EditMessageReplyMarkup`, `EditMessageLiveLocation`,
-      `StopMessageLiveLocation`, `EditMessageChecklist`
-- [ ] `StopPoll`
-- [ ] `DeleteMessage`, `DeleteMessages`
-- [ ] `SetMessageReaction`
+      `StopMessageLiveLocation` (edit-of-inline returns `(nil, nil)`).
+      `EditMessageChecklist` still TODO.
+- [x] `StopPoll`
+- [x] `DeleteMessage`, `DeleteMessages`
+- [x] `SetMessageReaction`
 
 ### Chat administration
-- [ ] `BanChatMember`, `UnbanChatMember`, `RestrictChatMember`,
+- [x] `BanChatMember`, `UnbanChatMember`, `RestrictChatMember`,
       `PromoteChatMember`, `SetChatAdministratorCustomTitle`,
       `BanChatSenderChat`, `UnbanChatSenderChat`
-- [ ] `SetChatPermissions`, `ExportChatInviteLink`, `CreateChatInviteLink`,
+- [x] `SetChatPermissions`, `ExportChatInviteLink`, `CreateChatInviteLink`,
       `EditChatInviteLink`, `RevokeChatInviteLink`,
       `CreateChatSubscriptionInviteLink`, `EditChatSubscriptionInviteLink`,
       `ApproveChatJoinRequest`, `DeclineChatJoinRequest`
-- [ ] `SetChatPhoto`, `DeleteChatPhoto`, `SetChatTitle`,
+- [x] `SetChatPhoto`, `DeleteChatPhoto`, `SetChatTitle`,
       `SetChatDescription`, `PinChatMessage`, `UnpinChatMessage`,
       `UnpinAllChatMessages`, `LeaveChat`
-- [ ] `GetChat`, `GetChatAdministrators`, `GetChatMemberCount`,
+- [x] `GetChat`, `GetChatAdministrators`, `GetChatMemberCount`,
       `GetChatMember`, `SetChatStickerSet`, `DeleteChatStickerSet`,
       `GetForumTopicIconStickers`
 
 ### Forum topics
-- [ ] `CreateForumTopic`, `EditForumTopic`, `CloseForumTopic`,
+- [x] `CreateForumTopic`, `EditForumTopic`, `CloseForumTopic`,
       `ReopenForumTopic`, `DeleteForumTopic`,
       `UnpinAllForumTopicMessages`, `EditGeneralForumTopic`,
       `CloseGeneralForumTopic`, `ReopenGeneralForumTopic`,
@@ -57,18 +59,18 @@ package — they fall back to using `sendRequest` directly. Group by domain:
       `UnpinAllGeneralForumTopicMessages`
 
 ### Bot configuration
-- [ ] `SetMyName`, `GetMyName`, `SetMyDescription`, `GetMyDescription`,
+- [x] `SetMyName`, `GetMyName`, `SetMyDescription`, `GetMyDescription`,
       `SetMyShortDescription`, `GetMyShortDescription`
-- [ ] `SetMyCommands`, `DeleteMyCommands`, `GetMyCommands`
-- [ ] `SetChatMenuButton`, `GetChatMenuButton`,
+- [x] `SetMyCommands`, `DeleteMyCommands`, `GetMyCommands`
+- [x] `SetChatMenuButton`, `GetChatMenuButton`,
       `SetMyDefaultAdministratorRights`, `GetMyDefaultAdministratorRights`
 
 ### Inline mode
-- [ ] `AnswerInlineQuery`, `AnswerWebAppQuery`, `SavePreparedInlineMessage`
+- [x] `AnswerInlineQuery`, `AnswerWebAppQuery`, `SavePreparedInlineMessage`
 - [x] `AnswerCallbackQuery`
 
 ### Stickers
-- [ ] `UploadStickerFile`, `CreateNewStickerSet`, `AddStickerToSet`,
+- [x] `UploadStickerFile`, `CreateNewStickerSet`, `AddStickerToSet`,
       `SetStickerPositionInSet`, `DeleteStickerFromSet`, `ReplaceStickerInSet`,
       `SetStickerEmojiList`, `SetStickerKeywords`, `SetStickerMaskPosition`,
       `SetStickerSetTitle`, `SetStickerSetThumbnail`,
@@ -85,7 +87,9 @@ package — they fall back to using `sendRequest` directly. Group by domain:
       `TransferGift`, `GetReceivedGifts`, `SaveGift`
 
 ### Misc
-- [ ] `GetFile`, `GetUserProfilePhotos`, `GetUserChatBoosts`,
+- [x] `GetFile`
+- [x] `GetUserProfilePhotos`
+- [ ] `GetUserChatBoosts`,
       `GetBusinessConnection`, `SetUserEmojiStatus`,
       `ReadBusinessMessage`, `DeleteBusinessMessages`,
       `SetBusinessAccountName`, `SetBusinessAccountUsername`,
@@ -113,40 +117,34 @@ write the most common bot.
       }
       ```
       so callers can use `errors.As`.
-- [ ] **`context.Context` on all methods.** None of the current methods
-      accept a `Context`, which means cancellation, deadlines, and trace
-      propagation are impossible. Take it as the first argument
-      consistently when adding new methods, and add `…Ctx` variants for
-      the existing ones (or break the signatures — the package is
-      pre-`v1`).
-- [ ] **`ChatID` parameter type.** Telegram accepts either an integer or a
-      `@username`. The current `SendMessage` takes `chatID string` so the
-      caller does the conversion. Introduce a small `ChatID` type with
-      `Int64(int64)` / `Username(string)` constructors and `MarshalJSON`
-      to serialize correctly. Apply consistently to every new method.
-- [ ] **`InputFile` is a string alias.** That works for `file_id` and URL
-      cases but doesn't help with multipart uploads. Replace with a
-      proper interface or struct that the request layer recognizes and
-      attaches to the multipart body, so callers don't have to thread
-      `inputFile{field, name}` through `sendRequestWithFiles` themselves.
-- [ ] **Union-type helpers.** Add small predicate methods on the tagged
-      structs — e.g. `MessageOrigin.IsUser()`, `ChatMember.IsAdministrator()`,
-      `ReactionType.IsEmoji()` — so callers can avoid bare string
-      comparisons. Optionally add typed accessors that return the
-      variant-specific subset.
-- [ ] **`MaybeInaccessibleMessage`.** Currently embeds `Message`. Add a
-      `IsInaccessible()` method (`return m.Date == 0`) and a doc note.
-- [ ] **Functional options on send methods.** The current `sendOption`
-      pattern is fine for simple flags; for newer features (`reply_parameters`,
-      `link_preview_options`, `business_connection_id`, `effect_id`,
-      `message_effect_id`, `allow_paid_broadcast`) consider exposing them
-      via typed setters or a `SendMessageOptions` struct so they're
-      discoverable in IDEs.
-- [ ] **`SendMessage` thread_id parameter.** The signature is
-      `SendMessage(chatID string, thread_id string, text string, …)`.
-      Snake-case parameter names are non-idiomatic, and a string thread ID
-      is unusual. Either rename to `threadID int` or fold both into an
-      options struct.
+- [x] **`context.Context` on all methods.** Every method now takes
+      `ctx context.Context` as its first argument (breaking; the package is
+      pre-`v1`). `ctx` is plumbed through `sendRequest` / `sendMultipart` /
+      `do` via `http.NewRequestWithContext`, and `backoffSleep` honours
+      cancellation between and during retry waits.
+- [x] **`ChatID` parameter type.** Added `ChatID` with `Int64(int64)` /
+      `Username(string)` constructors, `String()` (form encoding),
+      `MarshalJSON` (number vs string), and `IsZero()`. Used by every method
+      that takes a chat target.
+- [x] **`InputFile` is a string alias.** Replaced with a sealed `InputFile`
+      interface plus `FileID` / `FileURL` / `FilePath` / `FileReader` /
+      `FileBytes` constructors. The request layer (`addFile` → `send`)
+      routes references to the form body and uploads to multipart parts,
+      so callers no longer thread `inputFile{field,name}` themselves.
+- [~] **Union-type helpers.** Done for the unions touched by this pass:
+      `ReactionType.IsEmoji/IsCustomEmoji/IsPaid` (+ `EmojiReaction` /
+      `CustomEmojiReaction` constructors). `MessageOrigin.IsUser`,
+      `ChatMember.IsAdministrator`, etc. still TODO (admin/forward domains).
+- [x] **`MaybeInaccessibleMessage`.** Added `IsInaccessible()`
+      (`return m.Date == 0`) with a doc note.
+- [~] **Functional options on send methods.** Exported `SendOption` and added
+      typed setters incl. `OptReplyParameters`, `OptLinkPreviewOptions`,
+      `OptBusinessConnectionID`, `OptMessageEffectID`, `OptAllowPaidBroadcast`,
+      `OptMessageThreadID`, `OptCaption`, media/location setters, and edit
+      targeting (`OptChatID` / `OptMessageID` / `OptInlineMessageID`). A
+      consolidated `SendMessageOptions` struct is still open.
+- [x] **`SendMessage` thread_id parameter.** Dropped the snake-case string
+      `thread_id` positional; thread targeting is now `OptMessageThreadID(int)`.
 
 ## Correctness margin
 
@@ -184,10 +182,12 @@ write the most common bot.
 
 ## Tests
 
-- [ ] **Real unit tests.** `client_test.go` defines two
-      `TestClient_*` functions whose `tests` slice is empty, so
-      they're effectively no-ops. Add `httptest.Server`-backed tests
-      that:
+- [x] **Real unit tests.** The empty no-op `TestClient_*` stubs are gone.
+      `httptest.Server`-backed tests now cover `Me`, the webhook trio,
+      `AnswerCallbackQuery`, the location/venue/contact/poll/dice family,
+      `SendPhoto` (reference + multipart upload), `SendMediaGroup`, the
+      edit/delete/react/copy family, `StopPoll`, `ChatID`, `InputFile`, and
+      the `APIError` / retry / context-cancellation paths. Original goal:
   - drive `NewClient(token, server.URL)` (the existing `WithBaseURL`
     option supports this)
   - cover golden-path JSON round-trips for the most-used types (the

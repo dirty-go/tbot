@@ -1,6 +1,7 @@
 package tbot
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,7 +30,7 @@ func TestClient_GetUpdates_UsesClientFieldsAndAdvancesOffset(t *testing.T) {
 	c.updateParams = url.Values{}
 	c.updateParams.Set("allowed_updates", `["message","callback_query"]`)
 
-	updates, err := c.GetUpdates()
+	updates, err := c.GetUpdates(context.Background())
 	if err != nil {
 		t.Fatalf("GetUpdates() error: %v", err)
 	}
@@ -67,7 +68,8 @@ func TestClient_SetDeleteGetWebhook(t *testing.T) {
 	defer srv.Close()
 
 	c, _ := newTestClient(t, srv)
-	ok, err := c.SetWebhook("https://example.com/hook", func(v url.Values) { v.Set("max_connections", "10") })
+	ctx := context.Background()
+	ok, err := c.SetWebhook(ctx, "https://example.com/hook", func(v url.Values) { v.Set("max_connections", "10") })
 	if err != nil || !ok {
 		t.Fatalf("SetWebhook() = (%v, %v), want (true, nil)", ok, err)
 	}
@@ -75,7 +77,7 @@ func TestClient_SetDeleteGetWebhook(t *testing.T) {
 		t.Fatalf("unexpected setWebhook body: %q", setBody)
 	}
 
-	ok, err = c.DeleteWebhook(true)
+	ok, err = c.DeleteWebhook(ctx, true)
 	if err != nil || !ok {
 		t.Fatalf("DeleteWebhook() = (%v, %v), want (true, nil)", ok, err)
 	}
@@ -83,7 +85,7 @@ func TestClient_SetDeleteGetWebhook(t *testing.T) {
 		t.Fatalf("unexpected deleteWebhook body: %q", deleteBody)
 	}
 
-	info, err := c.GetWebhookInfo()
+	info, err := c.GetWebhookInfo(ctx)
 	if err != nil {
 		t.Fatalf("GetWebhookInfo() error: %v", err)
 	}
@@ -105,7 +107,7 @@ func TestClient_AnswerCallbackQuery(t *testing.T) {
 	defer srv.Close()
 
 	c, _ := newTestClient(t, srv)
-	ok, err := c.AnswerCallbackQuery("cbq-1", "done", true, func(v url.Values) { v.Set("cache_time", "5") })
+	ok, err := c.AnswerCallbackQuery(context.Background(), "cbq-1", "done", true, func(v url.Values) { v.Set("cache_time", "5") })
 	if err != nil || !ok {
 		t.Fatalf("AnswerCallbackQuery() = (%v, %v), want (true, nil)", ok, err)
 	}
@@ -130,19 +132,20 @@ func TestClient_SendLocationSendVenueSendContactSendPollSendDice(t *testing.T) {
 	defer srv.Close()
 
 	c, _ := newTestClient(t, srv)
-	if _, err := c.SendLocation("42", 1.23, 4.56); err != nil {
+	ctx := context.Background()
+	if _, err := c.SendLocation(ctx, Int64(42), 1.23, 4.56); err != nil {
 		t.Fatalf("SendLocation() error: %v", err)
 	}
-	if _, err := c.SendVenue("42", 1.23, 4.56, "title", "address"); err != nil {
+	if _, err := c.SendVenue(ctx, Int64(42), 1.23, 4.56, "title", "address"); err != nil {
 		t.Fatalf("SendVenue() error: %v", err)
 	}
-	if _, err := c.SendContact("42", "+123", "Alice"); err != nil {
+	if _, err := c.SendContact(ctx, Int64(42), "+123", "Alice"); err != nil {
 		t.Fatalf("SendContact() error: %v", err)
 	}
-	if _, err := c.SendPoll("42", "q?", []InputPollOption{{Text: "A"}, {Text: "B"}}); err != nil {
+	if _, err := c.SendPoll(ctx, Int64(42), "q?", []InputPollOption{{Text: "A"}, {Text: "B"}}); err != nil {
 		t.Fatalf("SendPoll() error: %v", err)
 	}
-	if _, err := c.SendDice("42", func(v url.Values) { v.Set("emoji", "dice") }); err != nil {
+	if _, err := c.SendDice(ctx, Int64(42), func(v url.Values) { v.Set("emoji", "dice") }); err != nil {
 		t.Fatalf("SendDice() error: %v", err)
 	}
 

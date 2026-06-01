@@ -1,15 +1,8 @@
 package tbot
 
-// InputFile is the Telegram input-file marker. The Bot API accepts three
-// shapes:
-//   - a previously-uploaded file_id (string)
-//   - an HTTPS URL pointing at the file (string)
-//   - a multipart upload, referenced from JSON as "attach://<name>"
-//
-// This package represents InputFile as a string in the JSON payload. For
-// multipart uploads, code outside this file constructs the multipart body
-// directly (see api.go).
-type InputFile = string
+// InputFile is defined in input_file.go. Within JSON request bodies (such as
+// InputMedia below) a file to upload is referenced by an "attach://<name>"
+// string; the request layer wires the named multipart part to it.
 
 // InputMedia describes a media item to send via sendMediaGroup or
 // editMessageMedia.
@@ -62,19 +55,19 @@ type InputPaidMedia struct {
 // InputProfilePhoto describes a profile photo to upload via setUserProfilePhoto.
 // Variant is given by Type — "static" (single photo) or "animated" (a video).
 type InputProfilePhoto struct {
-	Type              string  `json:"type"`
-	Photo             string  `json:"photo,omitempty"`
-	Animation         string  `json:"animation,omitempty"`
+	Type               string  `json:"type"`
+	Photo              string  `json:"photo,omitempty"`
+	Animation          string  `json:"animation,omitempty"`
 	MainFrameTimestamp float64 `json:"main_frame_timestamp,omitempty"`
 }
 
 // InputStoryContent describes the content of a story to publish via the API.
 // Variant is given by Type — "photo" or "video".
 type InputStoryContent struct {
-	Type            string  `json:"type"`
-	Photo           string  `json:"photo,omitempty"`
-	Video           string  `json:"video,omitempty"`
-	Duration        float64 `json:"duration,omitempty"`
+	Type                string  `json:"type"`
+	Photo               string  `json:"photo,omitempty"`
+	Video               string  `json:"video,omitempty"`
+	Duration            float64 `json:"duration,omitempty"`
 	CoverFrameTimestamp float64 `json:"cover_frame_timestamp,omitempty"`
-	IsAnimation     bool    `json:"is_animation,omitempty"`
+	IsAnimation         bool    `json:"is_animation,omitempty"`
 }
