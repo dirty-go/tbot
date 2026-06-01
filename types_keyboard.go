@@ -18,11 +18,6 @@ type KeyboardButton struct {
 	RequestLocation    bool                            `json:"request_location,omitempty"`
 	RequestPoll        *KeyboardButtonPollType         `json:"request_poll,omitempty"`
 	WebApp             *WebAppInfo                     `json:"web_app,omitempty"`
-
-	// Deprecated: misspelled in early versions of this library. Telegram's
-	// JSON tag is "request_poll"; this field is kept so existing Go code that
-	// referenced the typo still compiles. New code should use RequestPoll.
-	RequestPool *KeyboardButtonPollType `json:"-"`
 }
 
 // KeyboardButtonRequestUsers requests one or more users to be shared with the
@@ -65,12 +60,6 @@ type KeyboardButtonRequestManagedBot struct {
 type KeyboardButtonPollType struct {
 	Type string `json:"type,omitempty"`
 }
-
-// KeyboardButtonPoolType is the misspelled alias kept for source
-// compatibility.
-//
-// Deprecated: use KeyboardButtonPollType.
-type KeyboardButtonPoolType = KeyboardButtonPollType
 
 // ReplyKeyboardMarkup describes a custom keyboard with reply options.
 //

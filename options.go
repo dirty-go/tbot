@@ -22,10 +22,6 @@ var (
 	OptProtectContent = func(r url.Values) { r.Set("protect_content", "true") }
 	// OptAllowPaidBroadcast allows up to 1000 messages/second against a fee.
 	OptAllowPaidBroadcast = func(r url.Values) { r.Set("allow_paid_broadcast", "true") }
-	// OptDisableWebPagePreview disables link previews for the message.
-	//
-	// Deprecated: prefer OptLinkPreviewOptions, which the Bot API now favours.
-	OptDisableWebPagePreview = func(r url.Values) { r.Set("disable_web_page_preview", "true") }
 	// OptShowCaptionAboveMedia renders the caption above the media.
 	OptShowCaptionAboveMedia = func(r url.Values) { r.Set("show_caption_above_media", "true") }
 	// OptHasSpoiler covers the media with a spoiler animation.
@@ -55,14 +51,6 @@ func OptBusinessConnectionID(id string) SendOption {
 // OptMessageEffectID applies a message effect (private chats only).
 func OptMessageEffectID(id string) SendOption {
 	return func(r url.Values) { r.Set("message_effect_id", id) }
-}
-
-// OptReplyToMessageID replies to a specific message.
-//
-// Deprecated: prefer OptReplyParameters, which also supports cross-chat
-// replies and quotes.
-func OptReplyToMessageID(id int) SendOption {
-	return func(r url.Values) { r.Set("reply_to_message_id", strconv.Itoa(id)) }
 }
 
 // OptReplyParameters describes the message being replied to.

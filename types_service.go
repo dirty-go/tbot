@@ -21,27 +21,6 @@ type VideoChatParticipantsInvited struct {
 	Users []User `json:"users"`
 }
 
-// VoiceChatScheduled is the pre-Bot-API-6.0 name for VideoChatScheduled.
-//
-// Deprecated: use VideoChatScheduled.
-type VoiceChatScheduled = VideoChatScheduled
-
-// VoiceChatStarted is the pre-Bot-API-6.0 name for VideoChatStarted.
-//
-// Deprecated: use VideoChatStarted.
-type VoiceChatStarted = VideoChatStarted
-
-// VoiceChatEnded is the pre-Bot-API-6.0 name for VideoChatEnded.
-//
-// Deprecated: use VideoChatEnded.
-type VoiceChatEnded = VideoChatEnded
-
-// VoiceChatParticipantsInvited is the pre-Bot-API-6.0 name for
-// VideoChatParticipantsInvited.
-//
-// Deprecated: use VideoChatParticipantsInvited.
-type VoiceChatParticipantsInvited = VideoChatParticipantsInvited
-
 // UsersShared contains information about users shared with the bot via a
 // KeyboardButtonRequestUsers button.
 type UsersShared struct {

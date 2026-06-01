@@ -210,9 +210,8 @@ write the most common bot.
 
 ## Future cleanup
 
-- [ ] **Pre-`v1` breaking change pass.** When the package cuts a `v1`,
-      drop the deprecated `Thumb` fields, `VoiceChat*` aliases,
-      `Forward*` legacy fields, `RequestPool` / `KeyboardButtonPoolType`,
+- [x] **Pre-`v1` breaking change pass.** Removed `Thumb` fields, `VoiceChat*`
+      aliases, `Forward*` legacy fields, `RequestPool` / `KeyboardButtonPoolType`,
       `ChatPermissions.CanSendMediaMessages`, `Poll.CorrectOptionID`,
-      `Chat.AllMembersAreAdministrators`. They exist solely to keep
-      pre-9.x callers compiling through this transition.
+      `Chat.AllMembersAreAdministrators`, `OptReplyToMessageID`,
+      `OptDisableWebPagePreview`, and `MimeType` alias fields.

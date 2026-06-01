@@ -17,9 +17,6 @@ type Sticker struct {
 	CustomEmojiID    string        `json:"custom_emoji_id,omitempty"`
 	NeedsRepainting  bool          `json:"needs_repainting,omitempty"`
 	FileSize         int64         `json:"file_size,omitempty"`
-
-	// Deprecated: see Animation.Thumb. Use Thumbnail.
-	Thumb *PhotoSize `json:"-"`
 }
 
 // Sticker Type values.

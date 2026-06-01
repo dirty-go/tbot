@@ -122,21 +122,6 @@ type Message struct {
 	VideoChatParticipantsInvited  *VideoChatParticipantsInvited  `json:"video_chat_participants_invited,omitempty"`
 	WebAppData                    *WebAppData                    `json:"web_app_data,omitempty"`
 	ReplyMarkup                   *InlineKeyboardMarkup          `json:"reply_markup,omitempty"`
-
-	// Deprecated: replaced by ForwardOrigin in Bot API 7.0. Telegram no longer
-	// populates these fields; use ForwardOrigin and switch on its Type.
-	ForwardFrom          *User  `json:"forward_from,omitempty"`
-	ForwardFromChat      *Chat  `json:"forward_from_chat,omitempty"`
-	ForwardFromMessageID int64  `json:"forward_from_message_id,omitempty"`
-	ForwardSignature     string `json:"forward_signature,omitempty"`
-	ForwardSenderName    string `json:"forward_sender_name,omitempty"`
-	ForwardDate          int64  `json:"forward_date,omitempty"`
-
-	// Deprecated: replaced by VideoChat* equivalents in Bot API 6.0.
-	VoiceChatScheduled           *VoiceChatScheduled           `json:"voice_chat_scheduled,omitempty"`
-	VoiceChatStarted             *VoiceChatStarted             `json:"voice_chat_started,omitempty"`
-	VoiceChatEnded               *VoiceChatEnded               `json:"voice_chat_ended,omitempty"`
-	VoiceChatParticipantsInvited *VoiceChatParticipantsInvited `json:"voice_chat_participants_invited,omitempty"`
 }
 
 // MessageId is the response shape returned by methods such as copyMessage that

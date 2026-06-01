@@ -96,7 +96,6 @@ type SendMessageOptions struct {
 	IsAnonymous          bool
 	Type                 string // "quiz" or "regular"
 	AllowsMultipleAnswers bool
-	CorrectOptionID      int
 	Explanation          string
 	ExplanationParseMode string
 	ExplanationEntities  []MessageEntity
@@ -249,9 +248,6 @@ func (o SendMessageOptions) Apply() []SendOption {
 	}
 	if o.AllowsMultipleAnswers {
 		add(func(v url.Values) { v.Set("allows_multiple_answers", "true") })
-	}
-	if o.CorrectOptionID != 0 {
-		add(func(v url.Values) { v.Set("correct_option_id", strconv.Itoa(o.CorrectOptionID)) })
 	}
 	if o.Explanation != "" {
 		add(func(v url.Values) { v.Set("explanation", o.Explanation) })

@@ -14,10 +14,6 @@ type Chat struct {
 	LastName         string `json:"last_name,omitempty"`
 	IsForum          bool   `json:"is_forum,omitempty"`
 	IsDirectMessages bool   `json:"is_direct_messages,omitempty"`
-
-	// Deprecated: this field was used in early Bot API versions; Telegram
-	// removed it. Kept so existing Go callers compile.
-	AllMembersAreAdministrators bool `json:"all_members_are_administrators,omitempty"`
 }
 
 // ChatFullInfo contains full information about a chat, returned by getChat.
@@ -90,8 +86,7 @@ type ChatLocation struct {
 }
 
 // ChatPermissions describes actions that a non-administrator user is allowed
-// to take in a chat. The granular send-* permissions added in Bot API 6.5
-// supersede the umbrella CanSendMediaMessages field.
+// to take in a chat.
 type ChatPermissions struct {
 	CanSendMessages       bool `json:"can_send_messages,omitempty"`
 	CanSendAudios         bool `json:"can_send_audios,omitempty"`
@@ -108,11 +103,6 @@ type ChatPermissions struct {
 	CanInviteUsers        bool `json:"can_invite_users,omitempty"`
 	CanPinMessages        bool `json:"can_pin_messages,omitempty"`
 	CanManageTopics       bool `json:"can_manage_topics,omitempty"`
-
-	// Deprecated: replaced by the granular CanSendAudios, CanSendDocuments,
-	// CanSendPhotos, CanSendVideos, CanSendVideoNotes, CanSendVoiceNotes
-	// fields in Bot API 6.5.
-	CanSendMediaMessages bool `json:"can_send_media_messages,omitempty"`
 }
 
 // ChatAdministratorRights describes actions that an administrator can take.

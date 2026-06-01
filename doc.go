@@ -173,24 +173,5 @@
 // [Client.GetUpdates], and examples/webhook/main.go for a webhook-based bot
 // using [Client.SetWebhook].
 //
-// # Deprecation policy
-//
-// The package is pre-v1; all APIs are subject to change. Older Bot API fields
-// are retained for source compatibility and carry a Deprecated doc comment:
-//
-//   - Animation.Thumb, Document.Thumb, Video.Thumb, VideoNote.Thumb,
-//     Sticker.Thumb — use Thumbnail (renamed in Bot API 6.6; json:"-")
-//   - Animation.MimeType, Video.MimeType, Voice.MimeType — use MIMEType
-//   - Message.ForwardFrom / ForwardFromChat / ForwardDate — use
-//     Message.ForwardOrigin and switch on its Type (replaced in Bot API 7.0)
-//   - Message.VoiceChatScheduled / VoiceChatStarted / VoiceChatEnded /
-//     VoiceChatParticipantsInvited — use the VideoChat* equivalents
-//     (renamed in Bot API 6.0)
-//   - Poll.CorrectOptionID (scalar) — use Poll.CorrectOptionIDs (array)
-//   - ChatPermissions.CanSendMediaMessages — use the granular per-media-type
-//     fields (replaced in Bot API 6.5)
-//   - OptReplyToMessageID / OptDisableWebPagePreview — use
-//     OptReplyParameters / OptLinkPreviewOptions
-//
 // [Telegram Bot API]: https://core.telegram.org/bots/api
 package tbot

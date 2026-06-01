@@ -173,7 +173,6 @@ func TestSendMessageOptions_Apply_IntFields(t *testing.T) {
 		{name: "heading", opts: SendMessageOptions{Heading: 180}, field: "heading", want: "180"},
 		{name: "proximity_alert_radius", opts: SendMessageOptions{ProximityAlertRadius: 500}, field: "proximity_alert_radius", want: "500"},
 		{name: "live_period", opts: SendMessageOptions{LivePeriod: 600}, field: "live_period", want: "600"},
-		{name: "correct_option_id", opts: SendMessageOptions{CorrectOptionID: 2}, field: "correct_option_id", want: "2"},
 		{name: "open_period", opts: SendMessageOptions{OpenPeriod: 120}, field: "open_period", want: "120"},
 		{name: "close_date", opts: SendMessageOptions{CloseDate: 1700000000}, field: "close_date", want: "1700000000"},
 		{name: "message_id", opts: SendMessageOptions{MessageID: 99}, field: "message_id", want: "99"},

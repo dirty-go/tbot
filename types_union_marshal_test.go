@@ -6,31 +6,6 @@ import (
 	"testing"
 )
 
-func TestDeprecatedThumbFieldsAreNotMarshaled(t *testing.T) {
-	size := &PhotoSize{FileID: "f", FileUniqueID: "u", Width: 1, Height: 1}
-	cases := []struct {
-		name string
-		v    any
-	}{
-		{name: "animation", v: Animation{Thumb: size}},
-		{name: "document", v: Document{Thumb: size}},
-		{name: "video", v: Video{Thumb: size}},
-		{name: "video_note", v: VideoNote{Thumb: size}},
-		{name: "sticker", v: Sticker{Thumb: size}},
-	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			b, err := json.Marshal(tc.v)
-			if err != nil {
-				t.Fatalf("marshal failed: %v", err)
-			}
-			if strings.Contains(string(b), `"thumb"`) {
-				t.Fatalf("deprecated thumb field must not be serialized: %s", string(b))
-			}
-		})
-	}
-}
-
 func TestReactionTypeMarshalJSON_WhitelistsVariantFields(t *testing.T) {
 	got, err := json.Marshal(ReactionType{
 		Type:          ReactionTypeEmoji,

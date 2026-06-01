@@ -9,12 +9,6 @@
 // File-size fields are also `int64` since the API documents that they may
 // exceed 2^31.
 //
-// Some fields and types from earlier API versions (Bot API ≤5.x) have been
-// renamed by Telegram. To preserve source compatibility for callers of this
-// library, the older Go fields/types are retained and annotated with a
-// `// Deprecated:` comment that points to the current replacement. New code
-// should use the replacement.
-//
 // Type definitions are split across several files in this package by domain:
 //
 //   - types.go            — small media/data leaves (PhotoSize, Audio, Poll, …)
@@ -74,14 +68,6 @@ type Animation struct {
 	FileName     string     `json:"file_name,omitempty"`
 	MIMEType     string     `json:"mime_type,omitempty"`
 	FileSize     int64      `json:"file_size,omitempty"`
-
-	// Deprecated: legacy alias for MIMEType. Telegram only ever populates
-	// mime_type; this field is kept so that older Go callers compile.
-	MimeType string `json:"-"`
-	// Deprecated: legacy field present in earlier versions of this library.
-	// Telegram renamed the JSON tag from "thumb" to "thumbnail" in Bot API 6.6;
-	// this Go field is now never populated. Use Thumbnail instead.
-	Thumb *PhotoSize `json:"-"`
 }
 
 // Audio represents an audio file to be treated as music by Telegram clients.
@@ -106,9 +92,6 @@ type Document struct {
 	FileName     string     `json:"file_name,omitempty"`
 	MIMEType     string     `json:"mime_type,omitempty"`
 	FileSize     int64      `json:"file_size,omitempty"`
-
-	// Deprecated: see Animation.Thumb.
-	Thumb *PhotoSize `json:"-"`
 }
 
 // Story represents a story posted in a chat.
@@ -131,11 +114,6 @@ type Video struct {
 	FileName       string         `json:"file_name,omitempty"`
 	MIMEType       string         `json:"mime_type,omitempty"`
 	FileSize       int64          `json:"file_size,omitempty"`
-
-	// Deprecated: legacy alias for MIMEType.
-	MimeType string `json:"-"`
-	// Deprecated: see Animation.Thumb.
-	Thumb *PhotoSize `json:"-"`
 }
 
 // VideoQuality describes one of the available qualities of a Video.
@@ -156,9 +134,6 @@ type VideoNote struct {
 	Duration     int        `json:"duration"`
 	Thumbnail    *PhotoSize `json:"thumbnail,omitempty"`
 	FileSize     int64      `json:"file_size,omitempty"`
-
-	// Deprecated: see Animation.Thumb.
-	Thumb *PhotoSize `json:"-"`
 }
 
 // Voice represents a voice note.
@@ -168,9 +143,6 @@ type Voice struct {
 	Duration     int    `json:"duration"`
 	MIMEType     string `json:"mime_type,omitempty"`
 	FileSize     int64  `json:"file_size,omitempty"`
-
-	// Deprecated: legacy alias for MIMEType.
-	MimeType string `json:"-"`
 }
 
 // Contact represents a phone contact.
@@ -255,10 +227,6 @@ type Poll struct {
 	CloseDate             int64           `json:"close_date,omitempty"`
 	Description           string          `json:"description,omitempty"`
 	DescriptionEntities   []MessageEntity `json:"description_entities,omitempty"`
-
-	// Deprecated: replaced by CorrectOptionIDs (now an array). Older code that
-	// reads a single value should switch to the new field.
-	CorrectOptionID int `json:"-"`
 }
 
 // File represents a file ready to be downloaded via getFile.
