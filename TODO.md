@@ -131,18 +131,17 @@ write the most common bot.
       `FileBytes` constructors. The request layer (`addFile` → `send`)
       routes references to the form body and uploads to multipart parts,
       so callers no longer thread `inputFile{field,name}` themselves.
-- [~] **Union-type helpers.** Done for the unions touched by this pass:
-      `ReactionType.IsEmoji/IsCustomEmoji/IsPaid` (+ `EmojiReaction` /
-      `CustomEmojiReaction` constructors). `MessageOrigin.IsUser`,
-      `ChatMember.IsAdministrator`, etc. still TODO (admin/forward domains).
+- [x] **Union-type helpers.** `MessageOrigin.IsUser/IsHiddenUser/IsChat/IsChannel`,
+      `ChatMember.IsCreator/IsAdministrator/IsMemberStatus/IsRestricted/HasLeft/IsBanned`,
+      `ChatBoostSource.IsPremium/IsGiftCode/IsGiveaway` added.
 - [x] **`MaybeInaccessibleMessage`.** Added `IsInaccessible()`
       (`return m.Date == 0`) with a doc note.
-- [~] **Functional options on send methods.** Exported `SendOption` and added
+- [x] **Functional options on send methods.** Exported `SendOption` and added
       typed setters incl. `OptReplyParameters`, `OptLinkPreviewOptions`,
       `OptBusinessConnectionID`, `OptMessageEffectID`, `OptAllowPaidBroadcast`,
       `OptMessageThreadID`, `OptCaption`, media/location setters, and edit
-      targeting (`OptChatID` / `OptMessageID` / `OptInlineMessageID`). A
-      consolidated `SendMessageOptions` struct is still open.
+      targeting (`OptChatID` / `OptMessageID` / `OptInlineMessageID`).
+      `SendMessageOptions` struct added for struct-literal ergonomics.
 - [x] **`SendMessage` thread_id parameter.** Dropped the snake-case string
       `thread_id` positional; thread targeting is now `OptMessageThreadID(int)`.
 
@@ -194,15 +193,15 @@ write the most common bot.
     JSON shape is the contract this package promises)
   - cover the `apiResponse{ok:false}` error path and the new
     `APIError` once introduced
-- [ ] **JSON round-trip tests** for every union type, exercising each
+- [x] **JSON round-trip tests** for every union type, exercising each
       `Type` discriminator value, to lock in marshal/unmarshal symmetry.
-- [ ] **Integration test against the live API**, gated by an environment
+- [x] **Integration test against the live API**, gated by an environment
       variable (`TBOT_TEST_TOKEN`), as a smoke test for protocol drift
       when Telegram updates the API.
 
 ## Documentation
 
-- [ ] Update `README.md` to advertise the new types, the union-type
+- [x] Update `README.md` to advertise the new types, the union-type
       conventions, and the deprecation policy.
 - [ ] Add `examples/` showing webhook + long-poll setups, the keyboard
       types, and a small payment flow.

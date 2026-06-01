@@ -368,6 +368,299 @@ func TestBackgroundFillRoundTrip(t *testing.T) {
 	}
 }
 
+func TestChatMemberLeftAndBannedRoundTrip(t *testing.T) {
+	u := User{ID: 9, IsBot: false, FirstName: "Dave"}
+	cases := []struct {
+		name  string
+		in    ChatMember
+		check func(*testing.T, ChatMember)
+	}{
+		{
+			name: "left",
+			in:   ChatMember{Status: ChatMemberStatusLeft, User: u},
+			check: func(t *testing.T, got ChatMember) {
+				if got.Status != ChatMemberStatusLeft {
+					t.Errorf("Status: got %q", got.Status)
+				}
+				if got.User.ID != 9 {
+					t.Errorf("User.ID: got %d", got.User.ID)
+				}
+			},
+		},
+		{
+			name: "kicked",
+			in:   ChatMember{Status: ChatMemberStatusBanned, User: u},
+			check: func(t *testing.T, got ChatMember) {
+				if got.Status != ChatMemberStatusBanned {
+					t.Errorf("Status: got %q", got.Status)
+				}
+				if got.User.ID != 9 {
+					t.Errorf("User.ID: got %d", got.User.ID)
+				}
+			},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.check(t, roundTripJSON(t, tc.in))
+		})
+	}
+}
+
+func TestMaybeInaccessibleMessageRoundTrip(t *testing.T) {
+	cases := []struct {
+		name  string
+		in    MaybeInaccessibleMessage
+		check func(*testing.T, MaybeInaccessibleMessage)
+	}{
+		{
+			name: "accessible",
+			in: MaybeInaccessibleMessage{Message: Message{
+				MessageID: 5,
+				Date:      1700000000,
+				Chat:      Chat{ID: 42, Type: "private"},
+				Text:      "hello",
+			}},
+			check: func(t *testing.T, got MaybeInaccessibleMessage) {
+				if got.IsInaccessible() {
+					t.Error("IsInaccessible: want false for non-zero Date")
+				}
+				if got.MessageID != 5 {
+					t.Errorf("MessageID: got %d", got.MessageID)
+				}
+				if got.Text != "hello" {
+					t.Errorf("Text: got %q", got.Text)
+				}
+			},
+		},
+		{
+			name: "inaccessible",
+			in: MaybeInaccessibleMessage{Message: Message{
+				MessageID: 7,
+				Date:      0,
+				Chat:      Chat{ID: 99, Type: "group"},
+			}},
+			check: func(t *testing.T, got MaybeInaccessibleMessage) {
+				if !got.IsInaccessible() {
+					t.Error("IsInaccessible: want true for zero Date")
+				}
+				if got.MessageID != 7 {
+					t.Errorf("MessageID: got %d", got.MessageID)
+				}
+			},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.check(t, roundTripJSON(t, tc.in))
+		})
+	}
+}
+
+func TestBotCommandScopeRoundTrip(t *testing.T) {
+	cases := []struct {
+		name  string
+		in    BotCommandScope
+		check func(*testing.T, BotCommandScope)
+	}{
+		{
+			name: "default",
+			in:   BotCommandScope{Type: BotCommandScopeTypeDefault},
+			check: func(t *testing.T, got BotCommandScope) {
+				if got.Type != BotCommandScopeTypeDefault {
+					t.Errorf("Type: got %q", got.Type)
+				}
+			},
+		},
+		{
+			name: "all_private_chats",
+			in:   BotCommandScope{Type: BotCommandScopeTypeAllPrivateChats},
+			check: func(t *testing.T, got BotCommandScope) {
+				if got.Type != BotCommandScopeTypeAllPrivateChats {
+					t.Errorf("Type: got %q", got.Type)
+				}
+			},
+		},
+		{
+			name: "all_group_chats",
+			in:   BotCommandScope{Type: BotCommandScopeTypeAllGroupChats},
+			check: func(t *testing.T, got BotCommandScope) {
+				if got.Type != BotCommandScopeTypeAllGroupChats {
+					t.Errorf("Type: got %q", got.Type)
+				}
+			},
+		},
+		{
+			name: "all_chat_administrators",
+			in:   BotCommandScope{Type: BotCommandScopeTypeAllChatAdministrators},
+			check: func(t *testing.T, got BotCommandScope) {
+				if got.Type != BotCommandScopeTypeAllChatAdministrators {
+					t.Errorf("Type: got %q", got.Type)
+				}
+			},
+		},
+		{
+			name: "chat",
+			in:   BotCommandScope{Type: BotCommandScopeTypeChat, ChatID: int64(123)},
+			check: func(t *testing.T, got BotCommandScope) {
+				if got.Type != BotCommandScopeTypeChat {
+					t.Errorf("Type: got %q", got.Type)
+				}
+			},
+		},
+		{
+			name: "chat_administrators",
+			in:   BotCommandScope{Type: BotCommandScopeTypeChatAdministrators, ChatID: "@mychan"},
+			check: func(t *testing.T, got BotCommandScope) {
+				if got.Type != BotCommandScopeTypeChatAdministrators {
+					t.Errorf("Type: got %q", got.Type)
+				}
+			},
+		},
+		{
+			name: "chat_member",
+			in:   BotCommandScope{Type: BotCommandScopeTypeChatMember, ChatID: int64(456), UserID: 789},
+			check: func(t *testing.T, got BotCommandScope) {
+				if got.Type != BotCommandScopeTypeChatMember {
+					t.Errorf("Type: got %q", got.Type)
+				}
+				if got.UserID != 789 {
+					t.Errorf("UserID: got %d", got.UserID)
+				}
+			},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.check(t, roundTripJSON(t, tc.in))
+		})
+	}
+}
+
+func TestInputMediaRoundTrip(t *testing.T) {
+	cases := []struct {
+		name  string
+		in    InputMedia
+		check func(*testing.T, InputMedia)
+	}{
+		{
+			name: "photo",
+			in:   InputMedia{Type: InputMediaTypePhoto, Media: "https://x/photo.jpg", Caption: "a photo"},
+			check: func(t *testing.T, got InputMedia) {
+				if got.Type != InputMediaTypePhoto {
+					t.Errorf("Type: got %q", got.Type)
+				}
+				if got.Media != "https://x/photo.jpg" {
+					t.Errorf("Media: got %q", got.Media)
+				}
+				if got.Caption != "a photo" {
+					t.Errorf("Caption: got %q", got.Caption)
+				}
+			},
+		},
+		{
+			name: "video",
+			in:   InputMedia{Type: InputMediaTypeVideo, Media: "file-id-vid", Duration: 30, Width: 1920, Height: 1080, SupportsStreaming: true},
+			check: func(t *testing.T, got InputMedia) {
+				if got.Type != InputMediaTypeVideo {
+					t.Errorf("Type: got %q", got.Type)
+				}
+				if got.Duration != 30 {
+					t.Errorf("Duration: got %d", got.Duration)
+				}
+				if !got.SupportsStreaming {
+					t.Error("SupportsStreaming: want true")
+				}
+			},
+		},
+		{
+			name: "animation",
+			in:   InputMedia{Type: InputMediaTypeAnimation, Media: "file-id-anim", HasSpoiler: true},
+			check: func(t *testing.T, got InputMedia) {
+				if got.Type != InputMediaTypeAnimation {
+					t.Errorf("Type: got %q", got.Type)
+				}
+				if !got.HasSpoiler {
+					t.Error("HasSpoiler: want true")
+				}
+			},
+		},
+		{
+			name: "audio",
+			in:   InputMedia{Type: InputMediaTypeAudio, Media: "file-id-aud", Performer: "The Band", Title: "Song"},
+			check: func(t *testing.T, got InputMedia) {
+				if got.Type != InputMediaTypeAudio {
+					t.Errorf("Type: got %q", got.Type)
+				}
+				if got.Performer != "The Band" {
+					t.Errorf("Performer: got %q", got.Performer)
+				}
+				if got.Title != "Song" {
+					t.Errorf("Title: got %q", got.Title)
+				}
+			},
+		},
+		{
+			name: "document",
+			in:   InputMedia{Type: InputMediaTypeDocument, Media: "file-id-doc", DisableContentTypeDetection: true},
+			check: func(t *testing.T, got InputMedia) {
+				if got.Type != InputMediaTypeDocument {
+					t.Errorf("Type: got %q", got.Type)
+				}
+				if !got.DisableContentTypeDetection {
+					t.Error("DisableContentTypeDetection: want true")
+				}
+			},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.check(t, roundTripJSON(t, tc.in))
+		})
+	}
+}
+
+func TestInputPaidMediaRoundTrip(t *testing.T) {
+	cases := []struct {
+		name  string
+		in    InputPaidMedia
+		check func(*testing.T, InputPaidMedia)
+	}{
+		{
+			name: "photo",
+			in:   InputPaidMedia{Type: "photo", Media: "file-id-photo"},
+			check: func(t *testing.T, got InputPaidMedia) {
+				if got.Type != "photo" {
+					t.Errorf("Type: got %q", got.Type)
+				}
+				if got.Media != "file-id-photo" {
+					t.Errorf("Media: got %q", got.Media)
+				}
+			},
+		},
+		{
+			name: "video",
+			in:   InputPaidMedia{Type: "video", Media: "file-id-vid", Width: 1280, Height: 720, Duration: 60, SupportsStreaming: true},
+			check: func(t *testing.T, got InputPaidMedia) {
+				if got.Type != "video" {
+					t.Errorf("Type: got %q", got.Type)
+				}
+				if got.Width != 1280 || got.Height != 720 {
+					t.Errorf("Width/Height: got %d/%d", got.Width, got.Height)
+				}
+				if !got.SupportsStreaming {
+					t.Error("SupportsStreaming: want true")
+				}
+			},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.check(t, roundTripJSON(t, tc.in))
+		})
+	}
+}
+
 func TestBackgroundTypeRoundTrip(t *testing.T) {
 	fill := &BackgroundFill{Type: BackgroundFillSolid, Color: 1}
 	doc := &Document{FileID: "fid", FileUniqueID: "uid"}
