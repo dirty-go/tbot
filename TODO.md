@@ -23,7 +23,7 @@ package — they fall back to using `sendRequest` directly. Group by domain:
       `SendVoice`, `SendVideoNote`, `SendMediaGroup` (file_id/URL/upload via the
       new `InputFile`). `SendPaidMedia` still TODO.
 - [x] `SendLocation`, `SendVenue`, `SendContact`, `SendPoll`, `SendDice`
-- [ ] `SendChecklist`, `SendGame`
+- [x] `SendChecklist`, `SendGame`
 - [x] `CopyMessage`, `CopyMessages`, `ForwardMessages`
 
 ### Messaging — edit/delete/react
@@ -78,18 +78,18 @@ package — they fall back to using `sendRequest` directly. Group by domain:
       `GetStickerSet`, `GetCustomEmojiStickers`
 
 ### Payments / Stars / gifts
-- [ ] `SendInvoice`, `CreateInvoiceLink`, `AnswerShippingQuery`,
+- [x] `SendInvoice`, `CreateInvoiceLink`, `AnswerShippingQuery`,
       `AnswerPreCheckoutQuery`, `RefundStarPayment`,
       `EditUserStarSubscription`
-- [ ] `GetStarTransactions`, `GetMyStarBalance`
-- [ ] `GetAvailableGifts`, `SendGift`, `GiftPremiumSubscription`,
+- [x] `GetStarTransactions`, `GetMyStarBalance`
+- [x] `GetAvailableGifts`, `SendGift`, `GiftPremiumSubscription`,
       `VerifyUserGift`, `ConvertGiftToStars`, `UpgradeGift`,
       `TransferGift`, `GetReceivedGifts`, `SaveGift`
 
 ### Misc
 - [x] `GetFile`
 - [x] `GetUserProfilePhotos`
-- [ ] `GetUserChatBoosts`,
+- [x] `GetUserChatBoosts`,
       `GetBusinessConnection`, `SetUserEmojiStatus`,
       `ReadBusinessMessage`, `DeleteBusinessMessages`,
       `SetBusinessAccountName`, `SetBusinessAccountUsername`,
@@ -97,7 +97,7 @@ package — they fall back to using `sendRequest` directly. Group by domain:
       `RemoveBusinessAccountProfilePhoto`,
       `SetBusinessAccountGiftSettings`, `GetBusinessAccountStarBalance`,
       `GetBusinessAccountGifts`, `TransferBusinessAccountStars`
-- [ ] Game scores: `SetGameScore`, `GetGameHighScores`
+- [x] Game scores: `SetGameScore`, `GetGameHighScores`
 
 A practical first cut is the *Send / edit / delete* family plus
 `GetUpdates` / `SetWebhook` and `AnswerCallbackQuery` — that lets people
