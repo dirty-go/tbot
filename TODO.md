@@ -205,7 +205,7 @@ write the most common bot.
       conventions, and the deprecation policy.
 - [x] Add `examples/` showing webhook + long-poll setups, the keyboard
       types, and a small payment flow.
-- [ ] Generate godoc-rendered package overview from the headers in
+- [x] Generate godoc-rendered package overview from the headers in
       `types.go`.
 
 ## Future cleanup
