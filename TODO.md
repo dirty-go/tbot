@@ -203,7 +203,7 @@ write the most common bot.
 
 - [x] Update `README.md` to advertise the new types, the union-type
       conventions, and the deprecation policy.
-- [ ] Add `examples/` showing webhook + long-poll setups, the keyboard
+- [x] Add `examples/` showing webhook + long-poll setups, the keyboard
       types, and a small payment flow.
 - [ ] Generate godoc-rendered package overview from the headers in
       `types.go`.

@@ -72,3 +72,18 @@ func WithHTTPTimeout(d time.Duration) ClientOptions {
 		c.httpClient.Timeout = d
 	}
 }
+
+// WithPollTimeout sets the long-poll timeout (in seconds) sent as the
+// "timeout" parameter to getUpdates. Telegram holds the connection open for
+// up to that many seconds before returning an empty update list. The HTTP
+// client timeout should be set to at least this value plus headroom (e.g.
+// WithHTTPClient with Timeout = WithPollTimeout + 15 s). Pass 0 to revert to
+// short-polling (no timeout parameter is sent).
+func WithPollTimeout(seconds int) ClientOptions {
+	return func(c *Client) {
+		if seconds < 0 {
+			seconds = 0
+		}
+		c.timeout = seconds
+	}
+}
