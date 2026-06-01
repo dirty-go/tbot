@@ -71,6 +71,32 @@ func (c *Client) DeleteMessages(ctx context.Context, chatID ChatID, messageIDs [
 	return ok, err
 }
 
+// SendChecklist sends a checklist message to a chat.
+func (c *Client) SendChecklist(ctx context.Context, chatID ChatID, checklist InputChecklist, opts ...SendOption) (*Message, error) {
+	req := url.Values{}
+	req.Set("chat_id", chatID.String())
+	req.Set("checklist", structString(checklist))
+	for _, opt := range opts {
+		opt(req)
+	}
+	msg := &Message{}
+	err := c.sendRequest(ctx, "/sendChecklist", req, msg)
+	return msg, err
+}
+
+// SendGame sends a game message to a chat.
+func (c *Client) SendGame(ctx context.Context, chatID ChatID, gameShortName string, opts ...SendOption) (*Message, error) {
+	req := url.Values{}
+	req.Set("chat_id", chatID.String())
+	req.Set("game_short_name", gameShortName)
+	for _, opt := range opts {
+		opt(req)
+	}
+	msg := &Message{}
+	err := c.sendRequest(ctx, "/sendGame", req, msg)
+	return msg, err
+}
+
 // SetMessageReaction sets the bot's reactions on a message. Pass a nil or empty
 // reaction slice to clear it; make the animation big with OptIsBig.
 func (c *Client) SetMessageReaction(ctx context.Context, chatID ChatID, messageID int, reaction []ReactionType, opts ...SendOption) (bool, error) {

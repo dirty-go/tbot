@@ -71,3 +71,17 @@ type InputStoryContent struct {
 	CoverFrameTimestamp float64 `json:"cover_frame_timestamp,omitempty"`
 	IsAnimation         bool    `json:"is_animation,omitempty"`
 }
+
+// InputChecklist describes a checklist to be sent via sendChecklist.
+type InputChecklist struct {
+	Title    string               `json:"title"`
+	Tasks    []InputChecklistTask `json:"tasks"`
+	Others   bool                 `json:"others,omitempty"`
+	Entities []MessageEntity      `json:"entities,omitempty"`
+}
+
+// InputChecklistTask is a single task within an InputChecklist.
+type InputChecklistTask struct {
+	Text     string          `json:"text"`
+	Entities []MessageEntity `json:"entities,omitempty"`
+}
