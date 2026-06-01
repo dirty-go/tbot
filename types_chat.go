@@ -298,6 +298,25 @@ const (
 	ChatMemberStatusBanned        = "kicked"
 )
 
+// IsCreator reports whether the member is the chat owner.
+func (m ChatMember) IsCreator() bool { return m.Status == ChatMemberStatusCreator }
+
+// IsAdministrator reports whether the member is an administrator.
+func (m ChatMember) IsAdministrator() bool { return m.Status == ChatMemberStatusAdministrator }
+
+// IsMemberStatus reports whether the member has the plain "member" status.
+// Named IsMemberStatus to avoid collision with the IsMember bool field.
+func (m ChatMember) IsMemberStatus() bool { return m.Status == ChatMemberStatusMember }
+
+// IsRestricted reports whether the member is restricted.
+func (m ChatMember) IsRestricted() bool { return m.Status == ChatMemberStatusRestricted }
+
+// HasLeft reports whether the member has left the chat.
+func (m ChatMember) HasLeft() bool { return m.Status == ChatMemberStatusLeft }
+
+// IsBanned reports whether the member has been banned (kicked).
+func (m ChatMember) IsBanned() bool { return m.Status == ChatMemberStatusBanned }
+
 // ChatMemberUpdated represents changes in the status of a chat member.
 type ChatMemberUpdated struct {
 	Chat                    Chat            `json:"chat"`

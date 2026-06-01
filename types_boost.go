@@ -44,6 +44,15 @@ const (
 	ChatBoostSourceGiveaway = "giveaway"
 )
 
+// IsPremium reports whether the boost was purchased with a Telegram Premium subscription.
+func (s ChatBoostSource) IsPremium() bool { return s.Source == ChatBoostSourcePremium }
+
+// IsGiftCode reports whether the boost came from a redeemed Premium gift code.
+func (s ChatBoostSource) IsGiftCode() bool { return s.Source == ChatBoostSourceGiftCode }
+
+// IsGiveaway reports whether the boost came from a giveaway.
+func (s ChatBoostSource) IsGiveaway() bool { return s.Source == ChatBoostSourceGiveaway }
+
 // ChatBoost contains information about an individual boost.
 type ChatBoost struct {
 	BoostID        string          `json:"boost_id"`

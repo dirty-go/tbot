@@ -270,6 +270,18 @@ const (
 	MessageOriginTypeChannel    = "channel"
 )
 
+// IsUser reports whether the origin is a visible user forward.
+func (o MessageOrigin) IsUser() bool { return o.Type == MessageOriginTypeUser }
+
+// IsHiddenUser reports whether the origin is a hidden-user forward.
+func (o MessageOrigin) IsHiddenUser() bool { return o.Type == MessageOriginTypeHiddenUser }
+
+// IsChat reports whether the origin is a chat forward.
+func (o MessageOrigin) IsChat() bool { return o.Type == MessageOriginTypeChat }
+
+// IsChannel reports whether the origin is a channel forward.
+func (o MessageOrigin) IsChannel() bool { return o.Type == MessageOriginTypeChannel }
+
 // LinkPreviewOptions describes link preview generation for a message.
 type LinkPreviewOptions struct {
 	IsDisabled       bool   `json:"is_disabled,omitempty"`
